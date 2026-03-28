@@ -11,6 +11,7 @@ Power Detector is an Android application written in Kotlin for devices running A
   - Send an SMS to one phone number
   - Send a Telegram message to a chat using a bot token
 - Background power change detection with WorkManager-backed execution
+- Manual test execution from the action form before relying on automation
 - GitHub Actions workflow to build and publish the APK
 - GitHub Pages marketing website with a download button for the latest release
 
@@ -65,6 +66,7 @@ app/build/outputs/apk/debug/app-debug.apk
 5. Enter the message.
 6. Save the action.
 7. Grant the SMS permission when Android prompts for it.
+8. Use `Run test action now` in the form if you want to verify delivery immediately.
 
 ### Add a Telegram action
 
@@ -77,6 +79,7 @@ app/build/outputs/apk/debug/app-debug.apk
 7. Enter the bot token.
 8. Enter the message.
 9. Save the action.
+10. Use `Run test action now` in the form to verify the bot token and chat ID.
 
 ### Message placeholders
 
@@ -123,3 +126,4 @@ After enabling Pages in the repository, the site will expose a download button t
 3. Plug and unplug the device.
 4. Confirm the centered status changes and the actions execute.
 5. Tap an action card to edit or disable it.
+6. Use the manual test button in the form to verify each action without unplugging the device.

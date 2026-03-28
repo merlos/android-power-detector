@@ -4,9 +4,11 @@ import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.ArrayAdapter
+import androidx.core.view.isVisible
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.merlos.powerdetector.R
@@ -14,6 +16,10 @@ import com.merlos.powerdetector.data.PowerActionEntity
 import com.merlos.powerdetector.databinding.DialogActionFormBinding
 import com.merlos.powerdetector.domain.ActionType
 import com.merlos.powerdetector.domain.PowerTrigger
+import com.merlos.powerdetector.execution.ActionExecutor
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ActionFormDialogFragment : DialogFragment() {
     private val viewModel: MainViewModel by activityViewModels()
@@ -89,9 +95,74 @@ class ActionFormDialogFragment : DialogFragment() {
             binding.recipientEditText.inputType = android.text.InputType.TYPE_CLASS_TEXT
         }
         binding.recipientEditText.setText(existingAction?.recipient.orEmpty())
+
+        binding.testActionButton.setOnClickListener {
+            runTestAction(actionType, existingAction)
+        }
     }
 
     private fun validateAndSave(actionType: ActionType, existingAction: PowerActionEntity?): Boolean {
+        val formState = readFormState(actionType)
+        if (formState == null) {
+            Snackbar.make(requireActivity().findViewById(android.R.id.content), R.string.validation_required, Snackbar.LENGTH_SHORT).show()
+            return false
+        }
+
+        viewModel.saveAction(
+            actionId = existingAction?.id ?: 0,
+            actionType = actionType,
+            trigger = formState.trigger,
+            recipient = formState.recipient,
+            botToken = formState.botToken,
+            message = formState.message,
+            enabled = binding.enabledSwitch.isChecked
+        )
+        return true
+    }
+
+    private fun runTestAction(actionType: ActionType, existingAction: PowerActionEntity?) {
+        val formState = readFormState(actionType) ?: run {
+            Snackbar.make(requireActivity().findViewById(android.R.id.content), R.string.validation_required, Snackbar.LENGTH_SHORT).show()
+            return
+        }
+        val appContext = requireContext().applicationContext
+
+        val draftAction = PowerActionEntity(
+            id = existingAction?.id ?: 0,
+            actionType = actionType.name,
+            trigger = formState.trigger.name,
+            recipient = formState.recipient,
+            botToken = formState.botToken,
+            message = formState.message,
+            enabled = binding.enabledSwitch.isChecked,
+            createdAt = existingAction?.createdAt ?: System.currentTimeMillis(),
+            updatedAt = System.currentTimeMillis()
+        )
+
+        binding.testActionButton.isEnabled = false
+        binding.testResultText.isVisible = true
+        binding.testResultText.text = getString(R.string.action_test_running)
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            val result = ActionExecutor(appContext).execute(
+                draftAction,
+                formState.trigger == PowerTrigger.ON_AC_POWER
+            )
+            if (draftAction.id > 0) {
+                viewModel.recordExecutionResult(draftAction.id, result.message)
+            }
+            withContext(Dispatchers.Main) {
+                binding.testActionButton.isEnabled = true
+                binding.testResultText.text = if (result.success) {
+                    getString(R.string.action_test_success, result.message)
+                } else {
+                    getString(R.string.action_test_failure, result.message)
+                }
+            }
+        }
+    }
+
+    private fun readFormState(actionType: ActionType): FormState? {
         val recipient = binding.recipientEditText.text?.toString()?.trim().orEmpty()
         val botToken = binding.botTokenEditText.text?.toString()?.trim().orEmpty()
         val message = binding.messageEditText.text?.toString()?.trim().orEmpty()
@@ -101,24 +172,38 @@ class ActionFormDialogFragment : DialogFragment() {
             PowerTrigger.ON_AC_POWER
         }
 
-        val isInvalid = recipient.isBlank() ||
-            message.isBlank() ||
-            (actionType == ActionType.TELEGRAM && botToken.isBlank())
-        if (isInvalid) {
-            Snackbar.make(requireActivity().findViewById(android.R.id.content), R.string.validation_required, Snackbar.LENGTH_SHORT).show()
-            return false
+        binding.recipientLayout.error = null
+        binding.botTokenLayout.error = null
+        binding.messageLayout.error = null
+
+        var valid = true
+        if (recipient.isBlank()) {
+            binding.recipientLayout.error = if (actionType == ActionType.SMS) {
+                getString(R.string.error_phone_required)
+            } else {
+                getString(R.string.error_chat_required)
+            }
+            valid = false
+        }
+        if (actionType == ActionType.TELEGRAM && botToken.isBlank()) {
+            binding.botTokenLayout.error = getString(R.string.error_bot_token_required)
+            valid = false
+        }
+        if (message.isBlank()) {
+            binding.messageLayout.error = getString(R.string.error_message_required)
+            valid = false
         }
 
-        viewModel.saveAction(
-            actionId = existingAction?.id ?: 0,
-            actionType = actionType,
+        if (!valid) {
+            return null
+        }
+
+        return FormState(
             trigger = trigger,
             recipient = recipient,
             botToken = botToken.ifBlank { null },
-            message = message,
-            enabled = binding.enabledSwitch.isChecked
+            message = message
         )
-        return true
     }
 
     private fun getDialogTitle(actionType: ActionType): String {
@@ -142,4 +227,11 @@ class ActionFormDialogFragment : DialogFragment() {
             }
         }
     }
+
+    private data class FormState(
+        val trigger: PowerTrigger,
+        val recipient: String,
+        val botToken: String?,
+        val message: String
+    )
 }

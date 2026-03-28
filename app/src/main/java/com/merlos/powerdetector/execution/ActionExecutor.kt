@@ -8,18 +8,16 @@ import android.telephony.SmsManager
 import androidx.core.content.ContextCompat
 import com.merlos.powerdetector.data.PowerActionEntity
 import com.merlos.powerdetector.domain.ActionType
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class ActionExecutor(
     private val context: Context,
-    private val telegramApiClient: TelegramApiClient = TelegramApiClient()
+    private val telegramApiClient: TelegramApiClient = TelegramApiClient(),
+    private val messageRenderer: ActionMessageRenderer = ActionMessageRenderer()
 ) {
     data class ExecutionResult(val success: Boolean, val message: String)
 
     fun execute(action: PowerActionEntity, isCharging: Boolean): ExecutionResult {
-        val renderedMessage = renderMessage(action.message, isCharging)
+        val renderedMessage = messageRenderer.render(action.message, isCharging)
         return when (ActionType.valueOf(action.actionType)) {
             ActionType.SMS -> sendSms(action.recipient, renderedMessage)
             ActionType.TELEGRAM -> sendTelegram(action.botToken, action.recipient, renderedMessage)
@@ -60,13 +58,5 @@ class ActionExecutor(
         } catch (error: Exception) {
             ExecutionResult(false, error.message ?: "Unable to send Telegram message")
         }
-    }
-
-    private fun renderMessage(template: String, isCharging: Boolean): String {
-        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        val now = formatter.format(Date())
-        return template
-            .replace("{status}", if (isCharging) "AC Power" else "Battery")
-            .replace("{time}", now)
     }
 }

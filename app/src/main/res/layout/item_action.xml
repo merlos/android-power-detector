@@ -51,6 +51,16 @@
                 android:textSize="13sp" />
 
             <TextView
+                android:id="@+id/previewText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="@color/panel_title"
+                android:textSize="13sp" />
+
+            <TextView
                 android:id="@+id/resultText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

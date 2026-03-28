@@ -84,4 +84,4 @@ git push origin v1.0.0
 - Never commit the keystore file to the repository.
 - Never put signing passwords in source files.
 - Rotate the keystore only if necessary, because changing signing keys affects upgrade compatibility.
-- If your repository owner is not `merlos`, update the GitHub Pages site metadata in [docs/index.html](docs/index.html).
+- The Pages workflow writes the active `owner/repo` value to `docs/assets/repository.json` at deploy time so the website can resolve the latest release for the correct repository automatically.

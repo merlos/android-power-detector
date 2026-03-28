@@ -1,13 +1,29 @@
-const owner = document.body.dataset.owner;
-const repo = document.body.dataset.repo;
 const releaseMeta = document.getElementById("release-meta");
 const primaryButton = document.getElementById("download-button");
 const secondaryButton = document.getElementById("download-button-secondary");
-const releasesUrl = `https://github.com/${owner}/${repo}/releases`;
+
+async function resolveRepository() {
+  try {
+    const response = await fetch("assets/repository.json", { cache: "no-store" });
+    if (response.ok) {
+      const payload = await response.json();
+      if (payload.repository && payload.repository.includes("/")) {
+        return payload.repository;
+      }
+    }
+  } catch (error) {
+  }
+
+  const owner = document.body.dataset.owner;
+  const repo = document.body.dataset.repo;
+  return `${owner}/${repo}`;
+}
 
 async function loadLatestRelease() {
+  const repository = await resolveRepository();
+  const releasesUrl = `https://github.com/${repository}/releases`;
   try {
-    const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases/latest`);
+    const response = await fetch(`https://api.github.com/repos/${repository}/releases/latest`);
     if (!response.ok) {
       throw new Error(`GitHub API returned ${response.status}`);
     }

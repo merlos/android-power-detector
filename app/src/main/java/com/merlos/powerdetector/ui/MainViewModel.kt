@@ -67,6 +67,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun recordExecutionResult(actionId: Long, message: String) {
+        if (actionId <= 0) {
+            return
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            dao.updateExecution(
+                actionId = actionId,
+                result = message,
+                executedAt = System.currentTimeMillis()
+            )
+        }
+    }
+
     fun hasEnabledSmsAction(actions: List<PowerActionEntity>): Boolean {
         return actions.any { it.enabled && it.actionType == ActionType.SMS.name }
     }

@@ -56,6 +56,7 @@ class ActionAdapter(
                 context.getString(R.string.action_disabled)
             }
             binding.subtitleText.text = context.getString(R.string.action_subtitle, triggerLabel, stateLabel)
+            binding.previewText.text = context.getString(R.string.action_preview, action.message)
             binding.resultText.text = when {
                 action.lastExecutedAt == null -> context.getString(R.string.action_last_never)
                 action.lastResult == context.getString(R.string.execution_success) -> {
