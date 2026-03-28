@@ -1,0 +1,2 @@
+-keep class androidx.work.impl.background.systemalarm.RescheduleReceiver { *; }
+-dontwarn org.conscrypt.**

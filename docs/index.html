@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Power Detector</title>
+  <meta name="description" content="Power Detector turns charging state changes into SMS and Telegram actions on Android 8.1+." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-owner="merlos" data-repo="android-power-detector">
+  <main class="page-shell">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Android 8.1+</p>
+        <h1>Know when the cable moves. React instantly.</h1>
+        <p class="hero-text">
+          Power Detector watches charging state changes and fires the actions you configured. Send an SMS, notify a Telegram chat, and keep an old Android phone useful.
+        </p>
+        <div class="hero-actions">
+          <a id="download-button" class="button button-primary" href="https://github.com/merlos/android-power-detector/releases" target="_blank" rel="noreferrer">Download latest APK</a>
+          <a class="button button-secondary" href="https://github.com/merlos/android-power-detector" target="_blank" rel="noreferrer">View source</a>
+        </div>
+        <p id="release-meta" class="release-meta">Looking up the latest release...</p>
+      </div>
+      <div class="hero-card">
+        <div class="phone-frame">
+          <div class="screen-card top-card">
+            <span class="screen-label">Current power source</span>
+            <strong class="screen-status">AC Power</strong>
+            <span class="screen-note">Device is plugged in. Matching actions will run immediately.</span>
+          </div>
+          <div class="screen-card bottom-card">
+            <span class="panel-title">Actions on change</span>
+            <div class="action-row sms">
+              <strong>SMS to +34 600 000 000</strong>
+              <span>When AC power is connected</span>
+            </div>
+            <div class="action-row telegram">
+              <strong>Telegram to warehouse-alerts</strong>
+              <span>When running on battery</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="feature-grid">
+      <article>
+        <h2>Built for practical old-device automation</h2>
+        <p>Install it on a spare phone or tablet and turn charging state changes into a simple trigger for your workflow.</p>
+      </article>
+      <article>
+        <h2>Two action types, one clean flow</h2>
+        <p>Add an SMS or Telegram action from the plus button, configure the trigger, and edit any action by tapping its card.</p>
+      </article>
+      <article>
+        <h2>Release-ready repository</h2>
+        <p>The repo includes Android CI, signed release publishing, and a GitHub Pages site that can point to the newest APK automatically.</p>
+      </article>
+    </section>
+
+    <section class="details">
+      <div>
+        <p class="eyebrow">Why use it</p>
+        <h2>Simple enough for a single phone. Structured enough for repeatable deployment.</h2>
+      </div>
+      <ul class="detail-list">
+        <li>Large, centered home screen status: <strong>AC Power</strong> or <strong>Battery</strong></li>
+        <li>Configurable SMS and Telegram actions</li>
+        <li>Background execution when charging changes</li>
+        <li>Tap-to-edit action cards with execution history</li>
+        <li>Works on Android 8.1 and newer</li>
+      </ul>
+    </section>
+
+    <section class="download-panel">
+      <div>
+        <p class="eyebrow">Get the APK</p>
+        <h2>Use the latest GitHub release</h2>
+        <p>The download button resolves to the newest published APK asset. If no APK is attached yet, it falls back to the releases page.</p>
+      </div>
+      <a id="download-button-secondary" class="button button-primary" href="https://github.com/merlos/android-power-detector/releases" target="_blank" rel="noreferrer">Open releases</a>
+    </section>
+  </main>
+  <script src="assets/site.js"></script>
+</body>
+</html>

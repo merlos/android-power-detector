@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="screen_background">#FFF8F1</color>
+    <color name="status_card">#FFFFFBF5</color>
+    <color name="panel_background">#FFFDFB</color>
+    <color name="card_stroke">#1A3A2A1A</color>
+    <color name="status_text">#FF1F2A1F</color>
+    <color name="status_caption">#FF6A706A</color>
+    <color name="panel_title">#FF243126</color>
+    <color name="panel_caption">#FF687267</color>
+    <color name="fab_background">#FF2E7D32</color>
+    <color name="permission_hint">#FFEFE4B8</color>
+    <color name="sms_indicator">#FFEF6C00</color>
+    <color name="telegram_indicator">#FF0288D1</color>
+    <color name="result_background">#FFF1EEE8</color>
+    <color name="hero_start">#FF8BC34A</color>
+    <color name="hero_end">#FFFFB300</color>
+    <color name="colorPrimary">#FF2E7D32</color>
+    <color name="colorPrimaryVariant">#FF1B5E20</color>
+    <color name="colorSecondary">#FFFFB300</color>
+    <color name="colorOnPrimary">#FFFFFFFF</color>
+    <color name="colorOnSecondary">#FF2C2300</color>
+    <color name="colorSurface">#FFFDFB</color>
+    <color name="colorOnSurface">#FF243126</color>
+</resources>
