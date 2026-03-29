@@ -53,9 +53,9 @@ class MainActivity : AppCompatActivity() {
         adapter = ActionAdapter(::showEditActionDialog)
         binding.actionsRecyclerView.adapter = adapter
 
-        binding.addActionButton.setOnClickListener {
-            showActionTypeChooser()
-        }
+        binding.addActionButton.setOnClickListener { showActionTypeChooser() }
+        binding.addActionInlineButton.setOnClickListener { showActionTypeChooser() }
+        binding.addActionEmptyButton.setOnClickListener { showActionTypeChooser() }
 
         observeViewModel()
         viewModel.refreshPowerState()

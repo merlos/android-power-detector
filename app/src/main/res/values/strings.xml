@@ -10,6 +10,8 @@
     <string name="actions_title">Actions on change</string>
     <string name="actions_subtitle">Tap an action to edit it, or add a new one with the plus button.</string>
     <string name="add_action">Add action</string>
+    <string name="add_action_short">Add</string>
+    <string name="add_first_action">Add your first action</string>
     <string name="empty_title">No actions configured yet</string>
     <string name="empty_body">Create an SMS or Telegram action to react when the device starts or stops charging.</string>
     <string name="choose_action_type">Choose the action type</string>
