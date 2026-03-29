@@ -35,8 +35,8 @@ object TelegramQrParser {
                     return@mapNotNull null
                 }
 
-                val key = URLDecoder.decode(token.substring(0, index), Charsets.UTF_8.name())
-                val value = URLDecoder.decode(token.substring(index + 1), Charsets.UTF_8.name())
+                val key = URLDecoder.decode(token.substring(0, index), "UTF-8")
+                val value = URLDecoder.decode(token.substring(index + 1), "UTF-8")
                 key to value
             }
             .toMap()

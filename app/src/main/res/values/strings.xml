@@ -58,6 +58,10 @@
     <string name="execution_success">Executed successfully</string>
     <string name="execution_failure_prefix">Failed: %1$s</string>
     <string name="chooser_title">What do you want to set up?</string>
+    <string name="monitor_channel_name">Power Monitor</string>
+    <string name="monitor_channel_description">Shows while the app is monitoring charger connect/disconnect events</string>
+    <string name="monitor_notification_title">Power Monitor Active</string>
+    <string name="monitor_notification_text">Watching for charger connect and disconnect events</string>
     <string name="error_phone_required">Enter a phone number.</string>
     <string name="error_chat_required">Enter a Telegram chat ID.</string>
     <string name="error_bot_token_required">Enter the Telegram bot token.</string>

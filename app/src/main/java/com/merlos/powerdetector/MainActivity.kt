@@ -17,6 +17,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.merlos.powerdetector.data.PowerActionEntity
 import com.merlos.powerdetector.databinding.ActivityMainBinding
 import com.merlos.powerdetector.domain.ActionType
+import com.merlos.powerdetector.service.PowerMonitorService
 import com.merlos.powerdetector.ui.ActionAdapter
 import com.merlos.powerdetector.ui.ActionFormDialogFragment
 import com.merlos.powerdetector.ui.MainViewModel
@@ -59,6 +60,7 @@ class MainActivity : AppCompatActivity() {
 
         observeViewModel()
         viewModel.refreshPowerState()
+        PowerMonitorService.start(this)
     }
 
     override fun onStart() {
