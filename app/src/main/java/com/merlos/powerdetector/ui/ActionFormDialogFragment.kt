@@ -1,19 +1,23 @@
 package com.merlos.powerdetector.ui
 
+import android.Manifest
 import android.app.Dialog
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.os.BatteryManager
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.ArrayAdapter
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.merlos.powerdetector.R
@@ -31,9 +35,19 @@ class ActionFormDialogFragment : DialogFragment() {
     private var _binding: DialogActionFormBinding? = null
     private val binding: DialogActionFormBinding
         get() = checkNotNull(_binding)
-    private val qrPicker = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        if (uri != null) {
-            importTelegramQr(uri)
+    private val qrScanner = registerForActivityResult(ScanContract()) { result ->
+        val rawValue = result.contents?.trim().orEmpty()
+        if (rawValue.isBlank()) {
+            return@registerForActivityResult
+        }
+
+        applyTelegramQrPayload(TelegramQrParser.parse(rawValue))
+    }
+    private val cameraPermissionRequest = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) {
+            launchTelegramQrScanner()
+        } else {
+            Snackbar.make(requireActivity().findViewById(android.R.id.content), R.string.camera_permission_denied, Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -113,7 +127,7 @@ class ActionFormDialogFragment : DialogFragment() {
             binding.botTokenEditText.setText(existingAction?.botToken.orEmpty())
             binding.recipientEditText.inputType = android.text.InputType.TYPE_CLASS_TEXT
             binding.importQrButton.setOnClickListener {
-                qrPicker.launch("image/*")
+                startTelegramQrScan()
             }
         }
         binding.recipientEditText.setText(existingAction?.recipient.orEmpty())
@@ -184,22 +198,36 @@ class ActionFormDialogFragment : DialogFragment() {
         }
     }
 
-    private fun importTelegramQr(uri: Uri) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            val payload = TelegramQrImageDecoder.decode(requireContext().contentResolver, uri)
-            withContext(Dispatchers.Main) {
-                if (payload == null) {
-                    Snackbar.make(requireActivity().findViewById(android.R.id.content), R.string.qr_import_failed, Snackbar.LENGTH_SHORT).show()
-                    return@withContext
-                }
-
-                binding.botTokenEditText.setText(payload.botId)
-                binding.recipientEditText.setText(payload.chatId)
-                binding.botTokenLayout.error = null
-                binding.recipientLayout.error = null
-                Snackbar.make(requireActivity().findViewById(android.R.id.content), R.string.qr_import_success, Snackbar.LENGTH_SHORT).show()
-            }
+    private fun startTelegramQrScan() {
+        val permissionState = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+        if (permissionState == PackageManager.PERMISSION_GRANTED) {
+            launchTelegramQrScanner()
+        } else {
+            cameraPermissionRequest.launch(Manifest.permission.CAMERA)
         }
+    }
+
+    private fun launchTelegramQrScanner() {
+        val options = ScanOptions().apply {
+            setDesiredBarcodeFormats(ScanOptions.QR_CODE)
+            setPrompt(getString(R.string.qr_scan_prompt))
+            setBeepEnabled(false)
+            setOrientationLocked(true)
+        }
+        qrScanner.launch(options)
+    }
+
+    private fun applyTelegramQrPayload(payload: TelegramQrPayload?) {
+        if (payload == null) {
+            Snackbar.make(requireActivity().findViewById(android.R.id.content), R.string.qr_scan_failed, Snackbar.LENGTH_SHORT).show()
+            return
+        }
+
+        binding.botTokenEditText.setText(payload.botId)
+        binding.recipientEditText.setText(payload.chatId)
+        binding.botTokenLayout.error = null
+        binding.recipientLayout.error = null
+        Snackbar.make(requireActivity().findViewById(android.R.id.content), R.string.qr_scan_success, Snackbar.LENGTH_SHORT).show()
     }
 
     private fun readFormState(actionType: ActionType): FormState? {

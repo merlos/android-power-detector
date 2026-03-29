@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net/url"
 	"os"
@@ -10,25 +11,41 @@ import (
 )
 
 func main() {
-	if len(os.Args) < 3 || len(os.Args) > 4 {
-		fmt.Fprintf(os.Stderr, "usage: %s <botid> <chatid> [output.png]\n", filepath.Base(os.Args[0]))
+	outputPath := flag.String("png", "", "optional path to save the QR code as a PNG file")
+	flag.Usage = func() {
+		fmt.Fprintf(flag.CommandLine.Output(), "usage: %s [--png output.png] <botid> <chatid>\n", filepath.Base(os.Args[0]))
+		fmt.Fprintln(flag.CommandLine.Output(), "")
+		fmt.Fprintln(flag.CommandLine.Output(), "By default the QR code is printed to the terminal as ASCII.")
+		fmt.Fprintln(flag.CommandLine.Output(), "Use --png to also save it as a PNG file.")
+		flag.PrintDefaults()
+	}
+	flag.Parse()
+
+	if flag.NArg() != 2 {
+		flag.Usage()
 		os.Exit(1)
 	}
 
-	botID := os.Args[1]
-	chatID := os.Args[2]
-	outputPath := "telegram-action-setup.png"
-	if len(os.Args) == 4 {
-		outputPath = os.Args[3]
-	}
+	botID := flag.Arg(0)
+	chatID := flag.Arg(1)
 
 	payload := buildPayload(botID, chatID)
-	if err := qrcode.WriteFile(payload, qrcode.Medium, 512, outputPath); err != nil {
-		fmt.Fprintf(os.Stderr, "failed to write QR code: %v\n", err)
+	qrCode, err := qrcode.New(payload, qrcode.Medium)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to build QR code: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Printf("QR code written to %s\n", outputPath)
+	fmt.Println(qrCode.ToSmallString(false))
+
+	if *outputPath != "" {
+		if err := qrCode.WriteFile(512, *outputPath); err != nil {
+			fmt.Fprintf(os.Stderr, "failed to write QR code: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("QR code written to %s\n", *outputPath)
+	}
+
 	fmt.Printf("Payload: %s\n", payload)
 }
 

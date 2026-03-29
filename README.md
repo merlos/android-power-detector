@@ -84,33 +84,42 @@ app/build/outputs/apk/debug/app-debug.apk
 9. Save the action.
 10. Use `Run test action now` in the form to verify the bot token and chat ID.
 
-### Import Telegram setup from a QR image
+### Scan Telegram setup from a QR code
 
-1. Generate a QR image with the Go tool in [tools/telegramqr/main.go](tools/telegramqr/main.go).
+1. Generate a QR code with the Go tool in [tools/telegramqr/main.go](tools/telegramqr/main.go).
 2. Open the Telegram action form in the Android app.
-3. Tap `Import Telegram QR`.
-4. Choose the QR image from storage.
-5. The app fills the Telegram bot token and chat ID automatically.
+3. Show that QR code on another screen or print it.
+4. Tap `Scan Telegram QR`.
+5. Grant camera access if Android prompts for it.
+6. Point the camera at the QR code.
+7. The app fills the Telegram bot token and chat ID automatically.
 
 ### Generate a Telegram setup QR code
 
-The repository includes a Go command line tool that generates a QR image containing the Telegram setup payload understood by the Android app.
+The repository includes a Go command line tool that generates a QR code containing the Telegram setup payload understood by the Android app. By default it prints the QR code to the terminal as ASCII text, and it can optionally save a PNG file.
 
 Run it from the repository root:
 
 ```bash
 cd tools/telegramqr
-go run . <botid> <chatid> [output.png]
+go run . [--png output.png] <botid> <chatid>
+```
+
+Default terminal output example:
+
+```bash
+cd tools/telegramqr
+go run . 123456:ABCDEF -100123456789
 ```
 
 Example:
 
 ```bash
 cd tools/telegramqr
-go run . 123456:ABCDEF -100123456789 telegram-setup.png
+go run . --png telegram-setup.png 123456:ABCDEF -100123456789
 ```
 
-This generates a QR image whose payload looks like this:
+This prints the QR to the terminal and saves a PNG file whose payload looks like this:
 
 ```text
 powerdetector://telegram?botid=123456%3AABCDEF&chatid=-100123456789
@@ -132,6 +141,7 @@ Power state changed to {status} at {time}
 ## Permissions and behavior
 
 - `SEND_SMS` is only used for SMS actions.
+- `CAMERA` is only used to scan Telegram setup QR codes.
 - `INTERNET` is only used for Telegram messages.
 - Power state changes are detected through Android power broadcast intents.
 - SMS sending depends on device capabilities and granted permission.
