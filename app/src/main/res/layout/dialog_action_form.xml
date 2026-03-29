@@ -56,6 +56,23 @@
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/importQrButton"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/import_qr" />
+
+        <TextView
+            android:id="@+id/importQrHelperText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/import_qr_helper"
+            android:textColor="@color/panel_caption"
+            android:textSize="13sp" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/messageLayout"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"

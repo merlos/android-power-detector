@@ -6,10 +6,11 @@ Power Detector is an Android application written in Kotlin for devices running A
 
 - Large centered status on the home screen: `AC Power` or `Battery`
 - Action list in the lower panel with tap-to-edit cards
-- Add actions with the floating `+` button
+- Add actions with the in-panel Add button, empty-state button, or floating `+` button
 - Supported actions:
   - Send an SMS to one phone number
   - Send a Telegram message to a chat using a bot token
+- Go command line tool to generate Telegram setup QR codes
 - Background power change detection with WorkManager-backed execution
 - Manual test execution from the action form before relying on automation
 - GitHub Actions workflow to build and publish the APK
@@ -19,12 +20,12 @@ Power Detector is an Android application written in Kotlin for devices running A
 
 - Android Studio Iguana or newer, or a compatible Gradle/Android SDK setup
 - JDK 17
-- Android SDK 35
+- Android SDK 34
 - A device or emulator running Android 8.1+ (API 27+)
 
 ## Build locally
 
-1. Install Android Studio and ensure the Android SDK for API 35 is installed.
+1. Install Android Studio and ensure the Android SDK for API 34 is installed.
 2. Open the repository in Android Studio.
 3. Let Gradle sync and install any missing SDK components.
 4. Build the debug APK:
@@ -80,6 +81,38 @@ app/build/outputs/apk/debug/app-debug.apk
 8. Enter the message.
 9. Save the action.
 10. Use `Run test action now` in the form to verify the bot token and chat ID.
+
+### Import Telegram setup from a QR image
+
+1. Generate a QR image with the Go tool in [tools/telegramqr/main.go](tools/telegramqr/main.go).
+2. Open the Telegram action form in the Android app.
+3. Tap `Import Telegram QR`.
+4. Choose the QR image from storage.
+5. The app fills the Telegram bot token and chat ID automatically.
+
+### Generate a Telegram setup QR code
+
+The repository includes a Go command line tool that generates a QR image containing the Telegram setup payload understood by the Android app.
+
+Run it from the repository root:
+
+```bash
+cd tools/telegramqr
+go run . <botid> <chatid> [output.png]
+```
+
+Example:
+
+```bash
+cd tools/telegramqr
+go run . 123456:ABCDEF -100123456789 telegram-setup.png
+```
+
+This generates a QR image whose payload looks like this:
+
+```text
+powerdetector://telegram?botid=123456%3AABCDEF&chatid=-100123456789
+```
 
 ### Message placeholders
 

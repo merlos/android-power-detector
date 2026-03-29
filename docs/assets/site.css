@@ -69,12 +69,40 @@ h2 {
 .hero-text,
 .feature-grid p,
 .details p,
+.workflow-strip p,
+.tooling-panel p,
 .download-panel p,
 .release-meta,
 .detail-list {
   color: var(--muted);
   line-height: 1.7;
   font-size: 1rem;
+}
+
+.hero-highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.hero-highlights span,
+.screen-chip,
+.panel-add,
+.step-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.hero-highlights span,
+.screen-chip {
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid var(--stroke);
 }
 
 .hero-actions {
@@ -180,10 +208,34 @@ h2 {
   margin-top: 10px;
 }
 
+.screen-chip {
+  margin-top: 14px;
+  color: var(--ink);
+  width: fit-content;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.panel-add {
+  background: rgba(46, 125, 50, 0.12);
+  color: var(--green);
+}
+
 .action-row {
   margin-top: 14px;
   padding: 14px 16px;
   border-radius: 18px;
+}
+
+.action-row small {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
 }
 
 .action-row.sms {
@@ -203,14 +255,87 @@ h2 {
 
 .feature-grid article,
 .details,
+.workflow-strip,
+.tooling-panel,
 .download-panel {
   border-radius: 30px;
   padding: 26px;
 }
 
 .details,
+.workflow-strip,
+.tooling-panel,
 .download-panel {
   margin-top: 22px;
+}
+
+.workflow-strip,
+.tooling-panel {
+  background: var(--card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--stroke);
+  box-shadow: var(--shadow);
+}
+
+.workflow-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.step-card {
+  padding: 22px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(36, 49, 38, 0.08);
+}
+
+.step-card h3 {
+  margin: 16px 0 8px;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.45rem;
+}
+
+.step-index {
+  background: rgba(255, 179, 0, 0.16);
+  color: #875c00;
+}
+
+.tooling-panel {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 22px;
+  align-items: start;
+}
+
+.tooling-code {
+  display: grid;
+  gap: 12px;
+  padding: 22px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(36, 49, 38, 0.08);
+}
+
+.tooling-code span {
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.tooling-code code {
+  display: block;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #fffdf8;
+  border: 1px solid rgba(36, 49, 38, 0.08);
+  font-family: "SFMono-Regular", "Menlo", monospace;
+  font-size: 0.92rem;
+  color: var(--ink);
+  overflow-wrap: anywhere;
 }
 
 .detail-list {
@@ -229,9 +354,17 @@ h2 {
   gap: 24px;
 }
 
+.download-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
 @media (max-width: 960px) {
   .hero,
   .feature-grid,
+  .workflow-steps,
+  .tooling-panel,
   .download-panel {
     grid-template-columns: 1fr;
     display: grid;
@@ -255,11 +388,18 @@ h2 {
   .hero-card,
   .feature-grid article,
   .details,
+  .workflow-strip,
+  .tooling-panel,
   .download-panel {
     border-radius: 24px;
   }
 
   .hero-actions {
+    flex-direction: column;
+  }
+
+  .hero-highlights,
+  .download-actions {
     flex-direction: column;
   }
 

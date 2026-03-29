@@ -1,9 +1,11 @@
 package com.merlos.powerdetector.ui
 
 import android.app.Dialog
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.ArrayAdapter
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
@@ -26,6 +28,11 @@ class ActionFormDialogFragment : DialogFragment() {
     private var _binding: DialogActionFormBinding? = null
     private val binding: DialogActionFormBinding
         get() = checkNotNull(_binding)
+    private val qrPicker = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) {
+            importTelegramQr(uri)
+        }
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         _binding = DialogActionFormBinding.inflate(LayoutInflater.from(requireContext()))
@@ -86,13 +93,20 @@ class ActionFormDialogFragment : DialogFragment() {
         if (actionType == ActionType.SMS) {
             binding.recipientLayout.hint = getString(R.string.recipient_phone)
             binding.botTokenLayout.visibility = android.view.View.GONE
+            binding.importQrButton.visibility = android.view.View.GONE
+            binding.importQrHelperText.visibility = android.view.View.GONE
             binding.recipientEditText.inputType = android.text.InputType.TYPE_CLASS_PHONE
         } else {
             binding.recipientLayout.hint = getString(R.string.recipient_chat_id)
             binding.botTokenLayout.visibility = android.view.View.VISIBLE
+            binding.importQrButton.visibility = android.view.View.VISIBLE
+            binding.importQrHelperText.visibility = android.view.View.VISIBLE
             binding.botTokenLayout.hint = getString(R.string.bot_token_label)
             binding.botTokenEditText.setText(existingAction?.botToken.orEmpty())
             binding.recipientEditText.inputType = android.text.InputType.TYPE_CLASS_TEXT
+            binding.importQrButton.setOnClickListener {
+                qrPicker.launch("image/*")
+            }
         }
         binding.recipientEditText.setText(existingAction?.recipient.orEmpty())
 
@@ -158,6 +172,24 @@ class ActionFormDialogFragment : DialogFragment() {
                 } else {
                     getString(R.string.action_test_failure, result.message)
                 }
+            }
+        }
+    }
+
+    private fun importTelegramQr(uri: Uri) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val payload = TelegramQrImageDecoder.decode(requireContext().contentResolver, uri)
+            withContext(Dispatchers.Main) {
+                if (payload == null) {
+                    Snackbar.make(requireActivity().findViewById(android.R.id.content), R.string.qr_import_failed, Snackbar.LENGTH_SHORT).show()
+                    return@withContext
+                }
+
+                binding.botTokenEditText.setText(payload.botId)
+                binding.recipientEditText.setText(payload.chatId)
+                binding.botTokenLayout.error = null
+                binding.recipientLayout.error = null
+                Snackbar.make(requireActivity().findViewById(android.R.id.content), R.string.qr_import_success, Snackbar.LENGTH_SHORT).show()
             }
         }
     }
