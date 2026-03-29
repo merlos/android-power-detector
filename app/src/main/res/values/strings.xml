@@ -18,6 +18,7 @@
     <string name="action_type_sms">Send an SMS</string>
     <string name="action_type_telegram">Send a Telegram message</string>
     <string name="trigger_label">Trigger</string>
+    <string name="trigger_both">When power changes either way</string>
     <string name="trigger_ac">When AC power is connected</string>
     <string name="trigger_battery">When running on battery</string>
     <string name="recipient_phone">Phone number</string>

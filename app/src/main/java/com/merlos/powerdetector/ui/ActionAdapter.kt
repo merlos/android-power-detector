@@ -10,7 +10,7 @@ import com.merlos.powerdetector.data.PowerActionEntity
 import com.merlos.powerdetector.databinding.ItemActionBinding
 import com.merlos.powerdetector.domain.ActionType
 import com.merlos.powerdetector.domain.PowerTrigger
-import java.text.DateFormat
+import com.merlos.powerdetector.execution.AppDateTimeFormatter
 import java.util.Date
 
 class ActionAdapter(
@@ -45,10 +45,10 @@ class ActionAdapter(
             } else {
                 context.getString(R.string.action_telegram_title, action.recipient)
             }
-            val triggerLabel = if (trigger == PowerTrigger.ON_AC_POWER) {
-                context.getString(R.string.trigger_ac)
-            } else {
-                context.getString(R.string.trigger_battery)
+            val triggerLabel = when (trigger) {
+                PowerTrigger.BOTH -> context.getString(R.string.trigger_both)
+                PowerTrigger.ON_AC_POWER -> context.getString(R.string.trigger_ac)
+                PowerTrigger.ON_BATTERY -> context.getString(R.string.trigger_battery)
             }
             val stateLabel = if (action.enabled) {
                 context.getString(R.string.action_enabled_short)
@@ -62,8 +62,7 @@ class ActionAdapter(
                 action.lastResult == context.getString(R.string.execution_success) -> {
                     context.getString(
                         R.string.action_last_success,
-                        DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
-                            .format(Date(action.lastExecutedAt))
+                        AppDateTimeFormatter.format(Date(action.lastExecutedAt))
                     )
                 }
                 else -> {

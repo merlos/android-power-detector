@@ -1,6 +1,9 @@
 package com.merlos.powerdetector.ui
 
 import android.app.Dialog
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.BatteryManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -75,15 +78,20 @@ class ActionFormDialogFragment : DialogFragment() {
 
     private fun setupForm(actionType: ActionType, existingAction: PowerActionEntity?) {
         val triggerItems = listOf(
+            getString(R.string.trigger_both),
             getString(R.string.trigger_ac),
             getString(R.string.trigger_battery)
         )
         binding.triggerDropdown.setAdapter(
             ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, triggerItems)
         )
-        val currentTrigger = existingAction?.trigger?.let(PowerTrigger::valueOf) ?: PowerTrigger.ON_AC_POWER
+        val currentTrigger = existingAction?.trigger?.let(PowerTrigger::valueOf) ?: PowerTrigger.BOTH
         binding.triggerDropdown.setText(
-            if (currentTrigger == PowerTrigger.ON_AC_POWER) triggerItems[0] else triggerItems[1],
+            when (currentTrigger) {
+                PowerTrigger.BOTH -> triggerItems[0]
+                PowerTrigger.ON_AC_POWER -> triggerItems[1]
+                PowerTrigger.ON_BATTERY -> triggerItems[2]
+            },
             false
         )
         binding.enabledSwitch.isChecked = existingAction?.enabled ?: true
@@ -160,7 +168,7 @@ class ActionFormDialogFragment : DialogFragment() {
         lifecycleScope.launch(Dispatchers.IO) {
             val result = ActionExecutor(appContext).execute(
                 draftAction,
-                formState.trigger == PowerTrigger.ON_AC_POWER
+                resolveTestChargingState(formState.trigger)
             )
             if (draftAction.id > 0) {
                 viewModel.recordExecutionResult(draftAction.id, result.message)
@@ -198,10 +206,10 @@ class ActionFormDialogFragment : DialogFragment() {
         val recipient = binding.recipientEditText.text?.toString()?.trim().orEmpty()
         val botToken = binding.botTokenEditText.text?.toString()?.trim().orEmpty()
         val message = binding.messageEditText.text?.toString()?.trim().orEmpty()
-        val trigger = if (binding.triggerDropdown.text.toString() == getString(R.string.trigger_battery)) {
-            PowerTrigger.ON_BATTERY
-        } else {
-            PowerTrigger.ON_AC_POWER
+        val trigger = when (binding.triggerDropdown.text.toString()) {
+            getString(R.string.trigger_ac) -> PowerTrigger.ON_AC_POWER
+            getString(R.string.trigger_battery) -> PowerTrigger.ON_BATTERY
+            else -> PowerTrigger.BOTH
         }
 
         binding.recipientLayout.error = null
@@ -236,6 +244,23 @@ class ActionFormDialogFragment : DialogFragment() {
             botToken = botToken.ifBlank { null },
             message = message
         )
+    }
+
+    private fun resolveTestChargingState(trigger: PowerTrigger): Boolean {
+        return when (trigger) {
+            PowerTrigger.ON_AC_POWER -> true
+            PowerTrigger.ON_BATTERY -> false
+            PowerTrigger.BOTH -> readCurrentChargingState()
+        }
+    }
+
+    private fun readCurrentChargingState(): Boolean {
+        val context = requireContext().applicationContext
+        val batteryStatus = context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        val plugged = batteryStatus?.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1) ?: -1
+        return plugged == BatteryManager.BATTERY_PLUGGED_AC ||
+            plugged == BatteryManager.BATTERY_PLUGGED_USB ||
+            plugged == BatteryManager.BATTERY_PLUGGED_WIRELESS
     }
 
     private fun getDialogTitle(actionType: ActionType): String {

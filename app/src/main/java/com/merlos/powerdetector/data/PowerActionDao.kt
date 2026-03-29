@@ -14,8 +14,8 @@ interface PowerActionDao {
     @Query("SELECT * FROM power_actions WHERE id = :actionId LIMIT 1")
     suspend fun findById(actionId: Long): PowerActionEntity?
 
-    @Query("SELECT * FROM power_actions WHERE enabled = 1 AND trigger = :trigger ORDER BY updatedAt DESC")
-    suspend fun findEnabledForTrigger(trigger: String): List<PowerActionEntity>
+    @Query("SELECT * FROM power_actions WHERE enabled = 1 AND trigger IN (:triggers) ORDER BY updatedAt DESC")
+    suspend fun findEnabledForTriggers(triggers: List<String>): List<PowerActionEntity>
 
     @Upsert
     suspend fun upsert(action: PowerActionEntity): Long

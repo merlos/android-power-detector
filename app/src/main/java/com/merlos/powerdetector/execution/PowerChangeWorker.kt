@@ -20,7 +20,9 @@ class PowerChangeWorker(
         }
 
         val database = AppDatabase.getInstance(applicationContext)
-        val actions = database.powerActionDao().findEnabledForTrigger(trigger)
+        val actions = database.powerActionDao().findEnabledForTriggers(
+            listOf(PowerTrigger.BOTH.name, trigger)
+        )
         val executor = ActionExecutor(applicationContext)
         val executedAt = System.currentTimeMillis()
 

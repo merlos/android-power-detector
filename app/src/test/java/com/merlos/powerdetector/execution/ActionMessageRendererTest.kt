@@ -15,11 +15,11 @@ class ActionMessageRendererTest {
             template = "State {status} at {time}",
             isCharging = true,
             now = Date(0),
-            locale = Locale.US,
+            locale = Locale.ENGLISH,
             timeZone = TimeZone.getTimeZone("UTC")
         )
 
-        assertEquals("State AC Power at 1970-01-01 00:00:00", rendered)
+        assertEquals("State AC Power at 01-Jan-1970 00:00", rendered)
     }
 
     @Test

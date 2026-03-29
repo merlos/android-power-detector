@@ -61,6 +61,7 @@ app/build/outputs/apk/debug/app-debug.apk
 1. Tap the `+` button.
 2. Choose `Send an SMS`.
 3. Select when it should run:
+   - `When power changes either way` (default)
    - `When AC power is connected`
    - `When running on battery`
 4. Enter the destination phone number.
@@ -76,6 +77,7 @@ app/build/outputs/apk/debug/app-debug.apk
 3. Tap the `+` button.
 4. Choose `Send a Telegram message`.
 5. Select the trigger.
+   - `When power changes either way` is the default and lets one action handle both transitions.
 6. Enter the Telegram chat ID.
 7. Enter the bot token.
 8. Enter the message.
@@ -119,7 +121,7 @@ powerdetector://telegram?botid=123456%3AABCDEF&chatid=-100123456789
 The app supports these placeholders in action messages:
 
 - `{status}` → `AC Power` or `Battery`
-- `{time}` → current local timestamp
+- `{time}` → current local timestamp in the format `14-Apr-2026 14:20`
 
 Example:
 

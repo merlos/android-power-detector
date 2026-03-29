@@ -8,6 +8,7 @@ enum class ActionType : Serializable {
 }
 
 enum class PowerTrigger : Serializable {
+    BOTH,
     ON_AC_POWER,
     ON_BATTERY
 }
