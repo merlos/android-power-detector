@@ -2,7 +2,6 @@ package com.merlos.powerdetector.ui
 
 import java.net.URI
 import java.net.URLDecoder
-import java.nio.charset.StandardCharsets.UTF_8
 
 object TelegramQrParser {
     fun parse(rawValue: String): TelegramQrPayload? {
@@ -36,8 +35,8 @@ object TelegramQrParser {
                     return@mapNotNull null
                 }
 
-                val key = URLDecoder.decode(token.substring(0, index), UTF_8)
-                val value = URLDecoder.decode(token.substring(index + 1), UTF_8)
+                val key = URLDecoder.decode(token.substring(0, index), Charsets.UTF_8.name())
+                val value = URLDecoder.decode(token.substring(index + 1), Charsets.UTF_8.name())
                 key to value
             }
             .toMap()
